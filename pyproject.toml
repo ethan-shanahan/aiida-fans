@@ -51,7 +51,7 @@ version-file = "src/aiida_fans/_version.py"
 [tool.hatch.envs.docs]
 features = ["docs"]
 [tool.hatch.envs.docs.scripts]
-build = "make html"
+build = ["cd docs", "make html"]
 
 # Formatting Configuration
 [tool.ruff]

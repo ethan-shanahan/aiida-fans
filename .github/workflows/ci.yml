@@ -32,10 +32,10 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    # strategy:
-    #   matrix:
-    #     python-version: ['3.11', '3.12', '3.13']
-    #     aiida-version: ['stable']
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
+        aiida-version: ['stable']
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
