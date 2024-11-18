@@ -1,0 +1,52 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    
+
+jobs:
+
+  static-analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        python-version: ['3.12']
+        aiida-version: ['stable']
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install project manager
+      run: |
+        pip install hatch
+    - name: Run formatter and linter
+      run: |
+        hatch fmt --check
+
+  # docs:
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 15
+  #   strategy:
+  #     matrix:
+  #       python-version: ['3.12']
+  #       aiida-version: ['stable']
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Set up Python ${{ matrix.python-version }}
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: ${{ matrix.python-version }}
+  #     - name: Install project manager
+  #       run: |
+  #         pip install hatch
+  #     - name: Build docs
+  #       run: |
+  #         hatch run docs:build
+  
+  # tests:
