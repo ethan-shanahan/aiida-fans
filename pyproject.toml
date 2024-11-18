@@ -48,9 +48,9 @@ source = "vcs"
 version-file = "src/aiida_fans/_version.py"
 
 # Build - Docs
-[tool.hatch.env.docs]
+[tool.hatch.envs.docs]
 features = ["docs"]
-[tool.hatch.env.docs.scripts]
+[tool.hatch.envs.docs.scripts]
 build = "make html"
 
 # Formatting Configuration
