@@ -55,6 +55,7 @@ build = ""
 
 # Formatting Configuration
 [tool.ruff]
+extend-exclude = ["conf.py"]
 
 # Testing Configuration
 [tool.pytest.ini_options]
