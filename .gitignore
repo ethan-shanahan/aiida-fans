@@ -48,7 +48,7 @@ env.bak/
 venv.bak/
 
 # Sphinx documentation
-docs/_build/
+docs/build/
 
 # Auto-generated during builds
 /src/hatch/_version.py
