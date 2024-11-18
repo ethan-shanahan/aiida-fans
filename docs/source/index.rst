@@ -9,9 +9,8 @@ The aiida-fans plugin for `AiiDA`
 .. toctree::
    :maxdepth: 2
 
-   user_guide/index
-   developer_guide/index
-   API documentation <apidoc/aiida_fans>
+   user_guide/landing
+   developer_guide/landing
    AiiDA Documentation <https://aiida.readthedocs.io>
 
 ``aiida-fans`` is released under the GNU General Public License v3.
