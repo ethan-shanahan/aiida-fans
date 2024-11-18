@@ -38,5 +38,8 @@ If you have already set up your own aiida_fans code using
 Available calculations
 ++++++++++++++++++++++
 
-.. aiida-calcjob:: FansCalculation
-    :module: aiida_fans.calculations
+``aiida-calcjob:: FansCalculation``
+
+`Test`
+
+`Test`_
