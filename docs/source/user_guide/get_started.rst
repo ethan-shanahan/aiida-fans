@@ -39,7 +39,3 @@ Available calculations
 ++++++++++++++++++++++
 
 ``aiida-calcjob:: FansCalculation``
-
-`Test`
-
-`Test`_
