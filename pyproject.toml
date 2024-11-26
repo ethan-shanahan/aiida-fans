@@ -20,7 +20,7 @@ keywords = ["aiida", "plugin", "fans"]
 
 requires-python = ">= 3.11"
 dependencies = [
-    "aiida-core"
+    "aiida-core>=2.3"
 ]
 
 [project.optional-dependencies]
