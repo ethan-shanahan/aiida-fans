@@ -6,7 +6,7 @@
 [![Coverage Status][cov-badge]][cov-link]
 [![Docs Status][docs-badge]][docs-link]
 
-This is a plugin for [AiiDA](aiida-link) that facilitates the use of [FANS](FANS-link). FANS is an FFT-based homogenisation solver for microscale and multiphysics problems. It is an open-source project under active development at the Institute of Applied Mechanics, University of Stuttgart. This plugin aims to bring the full value of provenance tracking and database integration to the results produced by FANS.
+This is a plugin for [AiiDA][aiida-link] that facilitates the use of [FANS][FANS-link]. FANS is an FFT-based homogenisation solver for microscale and multiphysics problems. It is an open-source project under active development at the Institute of Applied Mechanics, University of Stuttgart. This plugin aims to bring the full value of provenance tracking and database integration to the results produced by FANS.
 
 The design goals of this plugin are primarily to provide as simplistic a user experience as is reasonably possible. Secondarily, more featureful additions will be made to extend the users' options for queryability and optimisation.
 
@@ -26,7 +26,7 @@ The package can always be installed by cloning this repository and installing it
 $ pip install ./aiida-fans
 ```
 
-You must also ensure that FANS, AiiDA, and their various dependencies are installed. Please consult the [FANS repository](FANS-link) and the [AiiDA installation](aiida-install-link) guide for more information.
+You must also ensure that FANS, AiiDA, and their various dependencies are installed. Please consult the [FANS repository][FANS-link] and the [AiiDA installation][aiida-install-link] guide for more information.
 
 ## Contact
 
