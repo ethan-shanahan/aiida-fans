@@ -32,7 +32,7 @@ docs = [
 [project.entry-points."aiida.data"]
 "fans" = "aiida_fans.data:FansParameters"
 [project.entry-points."aiida.calculations"]
-"fans" = "aiida_fans.calculations:FansCalculation"
+"fans" = "aiida_fans.calculations:FANSCalculation"
 [project.entry-points."aiida.parsers"]
 "fans" = "aiida_fans.parsers:FansParser"
 [project.entry-points."aiida.cmdline.data"]
