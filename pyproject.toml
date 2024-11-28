@@ -30,11 +30,11 @@ docs = [
 
 # Entry Points
 [project.entry-points."aiida.data"]
-"fans" = "aiida_fans.data:FansParameters"
+"fans" = "aiida_fans.data:FANSParameters"
 [project.entry-points."aiida.calculations"]
 "fans" = "aiida_fans.calculations:FANSCalculation"
 [project.entry-points."aiida.parsers"]
-"fans" = "aiida_fans.parsers:FansParser"
+"fans" = "aiida_fans.parsers:FANSParser"
 [project.entry-points."aiida.cmdline.data"]
 "fans" = "aiida_fans.cli:data_cli"
 
