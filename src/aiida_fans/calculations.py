@@ -53,7 +53,7 @@ class FANSCalculation(CalcJob):
                 return lambda i: None # TODO
             case "results":
                 valid = {"stress_average", "strain_average", "absolute_error", "phase_stress_average", "phase_strain_average", "microstructure", "displacement", "stress", "strain"}
-                return lambda i: note if i.get_list() > valid else None
+                return lambda i: note if not i.get_list() <= valid else None
 
     @classmethod
     def define(cls, spec: CalcJobProcessSpec) -> None:
