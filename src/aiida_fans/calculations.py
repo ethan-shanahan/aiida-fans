@@ -63,8 +63,14 @@ class FANSCalculation(CalcJob):
         super().define(spec)
 
         # Metadata
+        spec.inputs['metadata']['options']['resources'].default = {
+            'num_machines': 1,
+            'num_mpiprocs_per_machine': 4,
+        }
         spec.inputs["metadata"]["options"]["withmpi"].default = True
         spec.inputs["metadata"]["options"]["parser_name"].default = "fans"
+        spec.inputs["metadata"]["options"]["input_filename"].default = "input.json"
+        spec.inputs["metadata"]["options"]["output_filename"].default = "output.h5"
 
         # New Ports:        
         spec.input_namespace("microstructure",      help=(note:="The microstructure definition."))
