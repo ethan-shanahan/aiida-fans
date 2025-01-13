@@ -96,7 +96,7 @@ class FANSCalculation(CalcJob):
         spec.output("results", valid_type=SinglefileData)
 
         # Exit Codes:
-        spec.exit_code(400, "", "")
+        spec.exit_code(400, "PLACEHOLDER", "This is an error code, yet to be implemented.")
     
     def prepare_for_submission(self, folder: Folder) -> CalcInfo:
         """Creates the input file required by the calculation.
