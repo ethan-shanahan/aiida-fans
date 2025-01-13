@@ -13,9 +13,10 @@ class InputEncoder(json.JSONEncoder):
             case Dict():
                 return obj.get_dict()
             case ArrayData():
-                return [a[1].tolist() for a in obj.get_iterarrays()]
+                return [a[1].tolist() for a in obj.get_iterarrays()] #! Caution: may be disordered
             case SinglefileData():
                 return obj.filename
-
-        # Let the base class default method raise the TypeError
-        return super().default(obj)
+            case _:
+                # Let the base class default method raise the TypeError
+                print(f"FAILING: {obj=}")
+                return super().default(obj)
