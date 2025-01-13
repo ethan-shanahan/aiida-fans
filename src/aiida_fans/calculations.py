@@ -1,5 +1,5 @@
 """
-Calculations provided by aiida_faux.
+Calculations provided by aiida_fans.
 """
 from json import dump, dumps
 from typing import Callable, Any
