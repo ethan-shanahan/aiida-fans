@@ -90,7 +90,7 @@ class FANSCalculation(CalcJob):
         spec.input((input:="error_parameters.tolerance"),   valid_type=Float,           validator=cls.input_validator_selector(input, note), help=(note:="Sets the tolerance level for the solver, defining the convergence criterion based on the chosen error measure. The solver iterates until the solution meets this tolerance."))
         
         spec.input((input:="n_it"),                         valid_type=Int,             validator=cls.input_validator_selector(input, note), help=(note:="Specifies the maximum number of iterations allowed for the FANS solver."))
-        spec.input((input:="macroscale_loading"),           valid_type=ArrayData,       validator=cls.input_validator_selector(input, note), help=(note:="This defines the external loading applied to the microstructure. It is an array of arrays, where each sub-array represents a loading condition applied to the system. The format of the loading array depends on the problem type"))
+        spec.input((input:="macroscale_loading"),           valid_type=ArrayData,       validator=cls.input_validator_selector(input, note), help=(note:="This defines the external loading applied to the microstructure. It is an array of arrays, where each sub-array represents a loading condition applied to the system. The format of the loading array depends on the problem type."))
         spec.input((input:="results"),                      valid_type=List,            validator=cls.input_validator_selector(input, note), help=(note:="This array lists the quantities that should be stored into the results HDF5 file during the simulation."))
         
         spec.output("results", valid_type=SinglefileData)
