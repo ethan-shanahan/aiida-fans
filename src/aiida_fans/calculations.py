@@ -25,36 +25,40 @@ class FANSCalculation(CalcJob):
     ]
 
     @staticmethod
-    def input_validator_selector(input:str, note:str) -> function: # type: ignore  # noqa: F821 #?
+    def input_validator_selector(input:str, note:str) -> Callable[[Any, Any], str | None]:
+        # print(f"{input=}")
+        
         match input:
-            case "filename":
-                return lambda i: None
-            case "datasetname":
-                return lambda i: None
-            case "L":
-                return lambda i: note if len(i) != 3 else None # TODO check elements are numbers
+            case "microstructure.file":
+                return lambda i, p: None
+            case "microstructure.datasetname":
+                return lambda i, p: None
+            case "microstructure.L":
+                return lambda i, p: note if len(i) != 3 else None # TODO check elements are numbers
             case "problem_type":
-                return lambda i: note if i not in {"thermal", "mechanical"} else None
+                return lambda i, p: note if i.value not in {"thermal", "mechanical"} else None
             case "matmodel":
                 valid = {"LinearThermalIsotropic", "LinearElasticIsotropic", "PseudoPlasticLinearHardening", "PseudoPlasticNonLinearHardening", "J2ViscoPlastic_LinearIsotropicHardening", "J2ViscoPlastic_NonLinearIsotropicHardening"}
-                return lambda i: note if i not in valid else None
+                return lambda i, p: note if i.value not in valid else None
             case "material_properties":
-                return lambda i: None # TODO
+                return lambda i, p: None # TODO
             case "method":
-                return lambda i: note if i not in {"gc", "fp"} else None
-            case "measure":
-                return lambda i: note if i not in {"Linfinity", "L1", "L2"} else None
-            case "type":
-                return lambda i: note if i not in {"absolute", "relative"} else None
-            case "tolerance":
-                return lambda i: None
+                return lambda i, p: note if i.value not in {"cg", "fp"} else None
+            case "error_parameters.measure":
+                return lambda i, p: note if i.value not in {"Linfinity", "L1", "L2"} else None
+            case "error_parameters.type":
+                return lambda i, p: note if i.value not in {"absolute", "relative"} else None
+            case "error_parameters.tolerance":
+                return lambda i, p: None
             case "n_it":
-                return lambda i: None
+                return lambda i, p: None
             case "macroscale_loading":
-                return lambda i: None # TODO
+                return lambda i, p: None # TODO
             case "results":
                 valid = {"stress_average", "strain_average", "absolute_error", "phase_stress_average", "phase_strain_average", "microstructure", "displacement", "stress", "strain"}
-                return lambda i: note if not i.get_list() <= valid else None
+                return lambda i, p: note if not set(i.get_list()) <= valid else None
+            case _:
+                raise NotImplementedError()
 
     @classmethod
     def define(cls, spec: CalcJobProcessSpec) -> None:
