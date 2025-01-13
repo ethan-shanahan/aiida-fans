@@ -102,9 +102,30 @@ class FANSCalculation(CalcJob):
         """
 
         # Generating the input file.
-        json = dict(self.inputs)
+        json_to_be = dict(self.inputs)
+        del json_to_be["code"], json_to_be["metadata"]
+        to_fix = {}
+        for key, value in json_to_be.items():
+            if isinstance(value, AttributesFrozendict): # can be moved to InputEncoder?
+                to_fix[key] = {}
+                for k, v in json_to_be[key].items():
+                    to_fix[key][k] = v
+        json_to_be = json_to_be | to_fix
+        
+        to_add = {}
+        for key, value in json_to_be.items():
+            if key == "microstructure":
+                for k, v in value.items():
+                    if k == "file":
+                        to_add[f"ms_{k}name"] = v
+                    else:
+                        to_add[f"ms_{k}"] = v
+        
+        json_to_be = to_add | json_to_be
+        del json_to_be["microstructure"]
+
         with folder.open(self.options.input_filename, "w", "utf8") as handle:
-            dump(json, handle, cls=InputEncoder)
+            dump(json_to_be, handle, cls=InputEncoder, indent=4)
         
         # Specifying code info.
         codeinfo = CodeInfo()
