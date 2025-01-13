@@ -1,15 +1,16 @@
 """
 Calculations provided by aiida_faux.
 """
-from json import dump
+from json import dump, dumps
+from typing import Callable, Any
 from aiida.common.datastructures import CalcInfo, CodeInfo
 from aiida.common.folders import Folder
 from aiida.engine import CalcJob
 from aiida.engine.processes.process_spec import CalcJobProcessSpec
 from aiida.orm import Str, Int, Float, List, Dict, ArrayData, SinglefileData
+from plumpy.utils import AttributesFrozendict
 
-from helpers import InputEncoder
-
+from aiida_fans.helpers import InputEncoder
 
 
 class FANSCalculation(CalcJob):
