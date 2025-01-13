@@ -10,12 +10,20 @@ This is a plugin for [AiiDA][aiida-link] that facilitates the use of [FANS][FANS
 
 The design goals of this plugin are primarily to provide as simplistic a user experience as is reasonably possible. Secondarily, more featureful additions will be made to extend the users' options for queryability and optimisation.
 
-### Upcoming
+## Upcoming
 **Please note:** This plugin is currently in the planning stage of development, with substantial contributions coming soon.
 
-- basic functionality capable of completing the example simulations presented by FANS
-- a start to the documentation
-- publishing on PyPI
+### Pre-launch
+- [x] basic functionality capable of completing the example simulations presented by FANS with minimal database integration
+- [x] documentation hosted on aiida-fans.readthedocs.io
+- [ ] documentation outline
+- [ ] code coverage analysis
+- [ ] publish package on PyPI
+
+### Post-launch
+- [ ] input validation developed in cooperation with the FANS team
+- [ ] file sharing optimisations
+- [ ] greater database integration via output analysis/extraction 
 
 ## Installation
 The plugin is currently unavailable via PyPI at this stage in development, but it is intended to be published upon an upcoming functional release.
@@ -27,19 +35,6 @@ $ pip install ./aiida-fans
 ```
 
 You must also ensure that FANS, AiiDA, and their various dependencies are installed. Please consult the [FANS repository][FANS-link] and the [AiiDA installation][aiida-install-link] guide for more information.
-
-## Contributing
-
-### Development
-1. Branch off `dev` with a name appropriate for what you are working on (e.g. `feat/myfeature` or `bug/badbug`).
-2. Implement, commit, and push your changes.
-3. Open a Pull Request `dev ← feat/myfeature`, then merge and delete.
-
-### Release
-1. Open a Pull Request `main ← dev`, then squash and merge.
-2. Draft a new Release, named after the release version (e.g. v1.2.3).
-3. Create and assaign a new Tag, identically named.
-3. Generate release notes and publish.
 
 ## Contact
 
