@@ -23,7 +23,7 @@ class FANSCalculation(CalcJob):
             "microstructure.datasetname": lambda _i, _p: None,
             "microstructure.L": lambda i, _p: note if len(i) != 3 else None, # TODO: check elements are numbers
             "problem_type": lambda i, _p: note if i.value not in {"thermal", "mechanical"} else None,
-            "matmodel": lambda i, _p: note if i.value not in {"LinearThermalIsotropic", "LinearElasticIsotropic", "PseudoPlasticLinearHardening", "PseudoPlasticNonLinearHardening", "J2ViscoPlastic_LinearIsotropicHardening", "J2ViscoPlastic_NonLinearIsotropicHardening"} else None,
+            "matmodel": lambda i, _p: note if i.value not in {"LinearThermalIsotropic", "LinearElasticIsotropic", "PseudoPlasticLinearHardening", "PseudoPlasticNonLinearHardening", "J2ViscoPlastic_LinearIsotropicHardening", "J2ViscoPlastic_NonLinearIsotropicHardening"} else None,  # noqa: E501
             "material_properties": lambda _i, _p: None, # TODO: material properties
             "method": lambda i, _p: note if i.value not in {"cg", "fp"} else None,
             "error_parameters.measure": lambda i, _p: note if i.value not in {"Linfinity", "L1", "L2"} else None,
@@ -31,7 +31,7 @@ class FANSCalculation(CalcJob):
             "error_parameters.tolerance": lambda _i, _p: None,
             "n_it": lambda _i, _p: None,
             "macroscale_loading": lambda _i, _p: None, # TODO: macroscale loading
-            "results": lambda i, _p: note if not set(i.get_list()) <= {"stress_average", "strain_average", "absolute_error", "phase_stress_average", "phase_strain_average", "microstructure", "displacement", "stress", "strain"} else None,
+            "results": lambda i, _p: note if not set(i.get_list()) <= {"stress_average", "strain_average", "absolute_error", "phase_stress_average", "phase_strain_average", "microstructure", "displacement", "stress", "strain"} else None,  # noqa: E501
         }
         return validators[input]
 
@@ -53,23 +53,23 @@ class FANSCalculation(CalcJob):
 
         # New Ports:
         spec.input_namespace("microstructure",      help=(note:="The microstructure definition."))
-        spec.input((input:="microstructure.file"),          valid_type=SinglefileData,  validator=cls.__input_validator_selector(input, note), help=(note:="This specifies the path to the HDF5 file that contains the microstructure data."))
-        spec.input((input:="microstructure.datasetname"),   valid_type=Str,             validator=cls.__input_validator_selector(input, note), help=(note:="This is the path within the HDF5 file to the specific dataset that represents the microstructure."))
-        spec.input((input:="microstructure.L"),             valid_type=List,            validator=cls.__input_validator_selector(input, note), help=(note:="Microstructure length defines the physical dimensions of the microstructure in the x, y, and z directions."))
+        spec.input((input:="microstructure.file"),          valid_type=SinglefileData,  validator=cls.__input_validator_selector(input, note), help=(note:="This specifies the path to the HDF5 file that contains the microstructure data."))  # noqa: E501
+        spec.input((input:="microstructure.datasetname"),   valid_type=Str,             validator=cls.__input_validator_selector(input, note), help=(note:="This is the path within the HDF5 file to the specific dataset that represents the microstructure."))  # noqa: E501
+        spec.input((input:="microstructure.L"),             valid_type=List,            validator=cls.__input_validator_selector(input, note), help=(note:="Microstructure length defines the physical dimensions of the microstructure in the x, y, and z directions."))  # noqa: E501
 
-        spec.input((input:="problem_type"),                 valid_type=Str,             validator=cls.__input_validator_selector(input, note), help=(note:="This defines the type of physical problem you are solving. Common options include `thermal` problems and `mechanical` problems."))
-        spec.input((input:="matmodel"),                     valid_type=Str,             validator=cls.__input_validator_selector(input, note), help=(note:="This specifies the material model to be used in the simulation."))
-        spec.input((input:="material_properties"),          valid_type=Dict,            validator=cls.__input_validator_selector(input, note), help=(note:="This provides the necessary material parameters for the chosen material model."))
-        spec.input((input:="method"),                       valid_type=Str,             validator=cls.__input_validator_selector(input, note), help=(note:="This indicates the numerical method to be used for solving the system of equations. `cg` stands for the Conjugate Gradient method, and `fp` stands for the Fixed Point method."))
+        spec.input((input:="problem_type"),                 valid_type=Str,             validator=cls.__input_validator_selector(input, note), help=(note:="This defines the type of physical problem you are solving. Common options include `thermal` problems and `mechanical` problems."))  # noqa: E501
+        spec.input((input:="matmodel"),                     valid_type=Str,             validator=cls.__input_validator_selector(input, note), help=(note:="This specifies the material model to be used in the simulation."))  # noqa: E501
+        spec.input((input:="material_properties"),          valid_type=Dict,            validator=cls.__input_validator_selector(input, note), help=(note:="This provides the necessary material parameters for the chosen material model."))  # noqa: E501
+        spec.input((input:="method"),                       valid_type=Str,             validator=cls.__input_validator_selector(input, note), help=(note:="This indicates the numerical method to be used for solving the system of equations. `cg` stands for the Conjugate Gradient method, and `fp` stands for the Fixed Point method."))  # noqa: E501
 
-        spec.input_namespace("error_parameters",    help=(note:="This section defines the error parameters for the solver. Error control is applied on the finite element nodal residual of the problem."))
-        spec.input((input:="error_parameters.measure"),     valid_type=Str,             validator=cls.__input_validator_selector(input, note), help=(note:="Specifies the norm used to measure the error. Options include `Linfinity`, `L1`, or `L2`."))
-        spec.input((input:="error_parameters.type"),        valid_type=Str,             validator=cls.__input_validator_selector(input, note), help=(note:="Defines the type of error measurement. Options are `absolute` or `relative`."))
-        spec.input((input:="error_parameters.tolerance"),   valid_type=Float,           validator=cls.__input_validator_selector(input, note), help=(note:="Sets the tolerance level for the solver, defining the convergence criterion based on the chosen error measure. The solver iterates until the solution meets this tolerance."))
+        spec.input_namespace("error_parameters",    help=(note:="This section defines the error parameters for the solver. Error control is applied on the finite element nodal residual of the problem."))  # noqa: E501
+        spec.input((input:="error_parameters.measure"),     valid_type=Str,             validator=cls.__input_validator_selector(input, note), help=(note:="Specifies the norm used to measure the error. Options include `Linfinity`, `L1`, or `L2`."))  # noqa: E501
+        spec.input((input:="error_parameters.type"),        valid_type=Str,             validator=cls.__input_validator_selector(input, note), help=(note:="Defines the type of error measurement. Options are `absolute` or `relative`."))  # noqa: E501
+        spec.input((input:="error_parameters.tolerance"),   valid_type=Float,           validator=cls.__input_validator_selector(input, note), help=(note:="Sets the tolerance level for the solver, defining the convergence criterion based on the chosen error measure. The solver iterates until the solution meets this tolerance."))  # noqa: E501
 
-        spec.input((input:="n_it"),                         valid_type=Int,             validator=cls.__input_validator_selector(input, note), help=(note:="Specifies the maximum number of iterations allowed for the FANS solver."))
-        spec.input((input:="macroscale_loading"),           valid_type=ArrayData,       validator=cls.__input_validator_selector(input, note), help=(note:="This defines the external loading applied to the microstructure. It is an array of arrays, where each sub-array represents a loading condition applied to the system. The format of the loading array depends on the problem type."))
-        spec.input((input:="results"),                      valid_type=List,            validator=cls.__input_validator_selector(input, note), help=(note:="This array lists the quantities that should be stored into the results HDF5 file during the simulation."))
+        spec.input((input:="n_it"),                         valid_type=Int,             validator=cls.__input_validator_selector(input, note), help=(note:="Specifies the maximum number of iterations allowed for the FANS solver."))  # noqa: E501
+        spec.input((input:="macroscale_loading"),           valid_type=ArrayData,       validator=cls.__input_validator_selector(input, note), help=(note:="This defines the external loading applied to the microstructure. It is an array of arrays, where each sub-array represents a loading condition applied to the system. The format of the loading array depends on the problem type."))  # noqa: E501
+        spec.input((input:="results"),                      valid_type=List,            validator=cls.__input_validator_selector(input, note), help=(note:="This array lists the quantities that should be stored into the results HDF5 file during the simulation."))  # noqa: E501
 
         spec.output("results", valid_type=SinglefileData)
 
@@ -121,7 +121,13 @@ class FANSCalculation(CalcJob):
         # Specifying calc info.
         calcinfo = CalcInfo()
         calcinfo.codes_info = [codeinfo]
-        calcinfo.local_copy_list = [(self.inputs.microstructure.file.uuid, self.inputs.microstructure.file.filename, self.inputs.microstructure.file.filename)]
+        calcinfo.local_copy_list = [
+            (
+                self.inputs.microstructure.file.uuid,
+                self.inputs.microstructure.file.filename,
+                self.inputs.microstructure.file.filename
+            )
+        ]
         calcinfo.remote_copy_list = []
         calcinfo.retrieve_list = [
             self.options.input_filename + ".log",
