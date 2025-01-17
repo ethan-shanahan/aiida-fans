@@ -1,10 +1,13 @@
+"""Tools and utilities required by aiida_fans."""
 import json
 
-from aiida.orm import Str, Int, Float, List, Dict, ArrayData, SinglefileData
+from aiida.orm import ArrayData, Dict, Float, Int, List, SinglefileData, Str
 
 
 class InputEncoder(json.JSONEncoder):
+    """Prepares a dictionary of calcjob inputs for json representation."""
     def default(self, obj):
+        """Converts aiida datatypes to their python counterparts."""
         match obj:
             case Str() | Int() | Float():
                 return obj.value
@@ -18,5 +21,4 @@ class InputEncoder(json.JSONEncoder):
                 return obj.filename
             case _:
                 # Let the base class default method raise the TypeError
-                print(f"FAILING: {obj=}")
                 return super().default(obj)

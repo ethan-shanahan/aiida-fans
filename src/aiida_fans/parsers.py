@@ -1,3 +1,4 @@
+"""Parsers provided by aiida_fans."""
 from aiida.engine import ExitCode
 from aiida.orm import SinglefileData
 from aiida.parsers.parser import Parser
@@ -7,6 +8,7 @@ FANSCalculation = CalculationFactory("fans")
 
 
 class FANSParser(Parser):
+    """Extracts valuable data from FANS results."""
     def parse(self, **kwargs) -> ExitCode:
         """Parse outputs, store results in database.
 
