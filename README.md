@@ -36,6 +36,19 @@ $ pip install ./aiida-fans
 
 You must also ensure that FANS, AiiDA, and their various dependencies are installed. Please consult the [FANS repository][FANS-link] and the [AiiDA installation][aiida-install-link] guide for more information.
 
+## Contributing
+
+### Development
+1. Branch off `dev` with a name appropriate for what you are working on (e.g. `feat/myfeature` or `bug/badbug`).
+2. Implement, commit, and push your changes.
+3. Open a Pull Request `dev ← feat/myfeature`, then merge and delete.
+
+### Release
+1. Open a Pull Request `main ← dev`, then squash and merge.
+2. Draft a new Release, named after the release version (e.g. v1.2.3).
+3. Create and assaign a new Tag, identically named.
+3. Generate release notes and publish.
+
 ## Contact
 
 You can contact ethan.shanahan@gmail.com with regard to this plugin specifically.
