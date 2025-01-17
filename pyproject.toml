@@ -1,7 +1,6 @@
 [project]
 name = "aiida-fans"
-version = "0.1.0"
-# dynamic = ["version"]
+dynamic = ["version"]
 description = "AiiDA plugin for FANS, an FFT-based homogenization solver."
 urls = {Documentation = "http://aiida-fans.readthedocs.io/en/latest/", Source = "https://github.com/ethan-shanahan/aiida-fans" }
 authors = [{name = "Ethan Shanahan", email = "ethan.shanahan@gmail.com"}]
