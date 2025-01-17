@@ -1,21 +1,19 @@
 name: Continuous Integration
 
 on:
-  push:
-    branches: [main]
   pull_request:
+    branches: [main, dev]
     
-
 jobs:
 
   static-analysis:
+    name: Perform static analysis
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
       matrix:
         python-version: ['3.13']
         aiida-version: ['stable']
-
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
@@ -24,12 +22,14 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install project manager
       run: |
+        python -m pip install --upgrade pip
         pip install hatch
     - name: Run formatter and linter
       run: |
         hatch fmt --check
 
   docs:
+    name: Generate documentation
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -44,9 +44,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install project manager
         run: |
+          python -m pip install --upgrade pip
           pip install hatch
       - name: Build docs
         run: |
           hatch run docs:build
   
   # tests:
+    # name: Run tests
