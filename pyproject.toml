@@ -1,6 +1,7 @@
 [project]
 name = "aiida-fans"
-dynamic = ["version"]
+version = "0.1.0"
+# dynamic = ["version"]
 description = "AiiDA plugin for FANS, an FFT-based homogenization solver."
 urls = {Documentation = "http://aiida-fans.readthedocs.io/en/latest/", Source = "https://github.com/ethan-shanahan/aiida-fans" }
 authors = [{name = "Ethan Shanahan", email = "ethan.shanahan@gmail.com"}]
@@ -30,11 +31,11 @@ docs = [
 
 # Entry Points
 [project.entry-points."aiida.data"]
-"fans" = "aiida_fans.data:FansParameters"
+"fans" = "aiida_fans.data:FANSParameters"
 [project.entry-points."aiida.calculations"]
-"fans" = "aiida_fans.calculations:FansCalculation"
+"fans" = "aiida_fans.calculations:FANSCalculation"
 [project.entry-points."aiida.parsers"]
-"fans" = "aiida_fans.parsers:FansParser"
+"fans" = "aiida_fans.parsers:FANSParser"
 [project.entry-points."aiida.cmdline.data"]
 "fans" = "aiida_fans.cli:data_cli"
 
@@ -56,6 +57,29 @@ build = "sphinx-build -M html docs/source docs/build"
 # Formatting Configuration
 [tool.ruff]
 extend-exclude = ["conf.py"]
+line-length = 120
+[tool.ruff.lint]
+ignore = [
+    'PLR2004',  # Magic value used in comparison
+    "D417"  # Documentation for every function parameter
+]
+select = [
+  'E',  # pydocstyle
+  'W',  # pydocstyle
+  "D",  # pydocstyle
+  'F',  # pyflakes
+  'I',  # isort
+  'N',  # pep8-naming
+  'PLC',  # pylint-convention
+  'PLE',  # pylint-error
+  'PLR',  # pylint-refactor
+  'PLW',  # pylint-warning
+  'RUF'  # ruff
+]
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 # Testing Configuration
 [tool.pytest.ini_options]
