@@ -1,10 +1,9 @@
+
 # aiida-fans
 
-<!-- [![PyPI Package][pypi-badge]][pypi-link] -->
-[![GitHub Release][release-badge]][release-link]
-[![Build Status][ci-badge]][ci-link]
-[![Coverage Status][cov-badge]][cov-link]
+[![PyPI Package][pypi-badge]][pypi-link]
 [![Docs Status][docs-badge]][docs-link]
+[![Build Status][ci-badge]][ci-link]
 
 This is a plugin for [AiiDA][aiida-link] that facilitates the use of [FANS][FANS-link]. FANS is an FFT-based homogenisation solver for microscale and multiphysics problems. It is an open-source project under active development at the Institute of Applied Mechanics, University of Stuttgart. This plugin aims to bring the full value of provenance tracking and database integration to the results produced by FANS.
 
@@ -16,11 +15,11 @@ The design goals of this plugin are primarily to provide as simplistic a user ex
 ### Pre-launch
 - [x] basic functionality capable of completing the example simulations presented by FANS with minimal database integration
 - [x] documentation hosted on aiida-fans.readthedocs.io
-- [ ] documentation outline
-- [ ] code coverage analysis
-- [ ] publish package on PyPI
+- [x] documentation outline
+- [x] publish package on PyPI
 
 ### Post-launch
+- [ ] documentation expansion
 - [ ] input validation developed in cooperation with the FANS team
 - [ ] file sharing optimisations
 - [ ] greater database integration via output analysis/extraction 
