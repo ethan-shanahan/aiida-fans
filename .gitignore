@@ -52,4 +52,4 @@ venv.bak/
 docs/build/
 
 # Auto-generated during builds
-/src/hatch/_version.py
+_version.py
