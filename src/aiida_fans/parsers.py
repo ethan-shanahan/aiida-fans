@@ -1,4 +1,5 @@
 """Parsers provided by aiida_fans."""
+
 from aiida.engine import ExitCode
 from aiida.orm import SinglefileData
 from aiida.parsers.parser import Parser
@@ -9,13 +10,14 @@ FANSCalculation = CalculationFactory("fans")
 
 class FANSParser(Parser):
     """Extracts valuable data from FANS results."""
+
     def parse(self, **kwargs) -> ExitCode:
         """Parse outputs, store results in database.
 
         Returns:
             ExitCode: non-zero exit code, if parsing fails
         """
-        output_filename = self.node.get_option('output_filename')
+        output_filename = self.node.get_option("output_filename")
 
         # Check that folder content is as expected.
         files_retrieved = set(self.retrieved.list_object_names())
