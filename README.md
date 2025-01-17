@@ -2,7 +2,6 @@
 # aiida-fans
 
 [![PyPI Package][pypi-badge]][pypi-link]
-[![GitHub Release][release-badge]][release-link]
 [![Docs Status][docs-badge]][docs-link]
 [![Build Status][ci-badge]][ci-link]
 
