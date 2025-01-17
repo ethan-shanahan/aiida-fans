@@ -57,6 +57,29 @@ build = "sphinx-build -M html docs/source docs/build"
 # Formatting Configuration
 [tool.ruff]
 extend-exclude = ["conf.py"]
+line-length = 120
+[tool.ruff.lint]
+ignore = [
+    'PLR2004',  # Magic value used in comparison
+    "D417"  # Documentation for every function parameter
+]
+select = [
+  'E',  # pydocstyle
+  'W',  # pydocstyle
+  "D",  # pydocstyle
+  'F',  # pyflakes
+  'I',  # isort
+  'N',  # pep8-naming
+  'PLC',  # pylint-convention
+  'PLE',  # pylint-error
+  'PLR',  # pylint-refactor
+  'PLW',  # pylint-warning
+  'RUF'  # ruff
+]
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 # Testing Configuration
 [tool.pytest.ini_options]
