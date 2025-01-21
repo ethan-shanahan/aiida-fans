@@ -53,15 +53,15 @@ fans = "*"
 
 ### pixi: default tasks
 [tool.pixi.tasks]
-fmt = ""
-lint = ""
-publish = { cmd = "" }
+# fmt = ""
+# lint = ""
+# publish = { cmd = "" }
 
 ### pixi: features (in addition to fans)
 [tool.pixi.feature.dev]
 pypi-dependencies = {aiida-fans = { path = ".", editable = true }}
 [tool.pixi.feature.prod]
-pypi-dependencies = {aiida-fans = { path = "." }}
+pypi-dependencies = {aiida-fans = { path = ".", editable = true }}
 [tool.pixi.feature.fmt]
 dependencies = {ruff = "*"}
 tasks = {fmt = "ruff check"}
@@ -75,11 +75,15 @@ tasks = {build-docs = "sphinx-build -M html docs/source docs/build"}
 dependencies = {pytest = "*"}
 tasks = {test = "echo dummy test passes"}
 [tool.pixi.feature.py3]
-dependencies = {python = "3.*"}
+dependencies = {python = ">=3.11"}
 [tool.pixi.feature.py311]
 dependencies = {python = "3.11.*"}
 [tool.pixi.feature.py312]
 dependencies = {python = "3.12.*"}
+[tool.pixi.feature.py313]
+dependencies = {python = "3.13.*"}
+[tool.pixi.feature.dummy]
+tasks = {dum = "echo dummy task"}
 
 ### pixi: environments
 [tool.pixi.environments]
@@ -89,6 +93,7 @@ build = { features = ["build", "py3"], no-default-feature = true }
 docs = { features = ["docs", "py3"], no-default-feature = true }
 test-py311 = { features = ["prod", "test", "py311"], solve-group = "py311" }
 test-py312 = { features = ["prod", "test", "py312"], solve-group = "py312" }
+# test-py313 = { features = ["prod", "test", "py313"], solve-group = "py313" }
 
 
 ## Build Tools: setuptools_scm
