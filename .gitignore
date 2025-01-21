@@ -54,3 +54,6 @@ docs/build/
 
 # Auto-generated during builds
 _version.py
+
+# Lock file
+*.lock
