@@ -19,13 +19,13 @@ jobs:
           pixi-version: v0.40.2
           cache: false #true
           environments: fmt
-          activate-environment: true
+        #   activate-environment: true
       - name: Run formatter and linter
-        run: fmt
+        run: pixi run fmt
       - name: dummy
         run: dummy
-      - name: my dummy
-        run: my-dummy
+      - name: pixi run my dummy
+        run: pixi run my-dummy
 
 #   test:
 #     name: Perform tests
@@ -62,4 +62,4 @@ jobs:
           environments: docs
           activate-environment: true
       - name: Build docs
-        run: build-docs
+        run: pixi run build-docs
