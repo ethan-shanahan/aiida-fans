@@ -16,11 +16,11 @@ jobs:
         uses: prefix-dev/setup-pixi@v0.8.1
         with:
           pixi-version: v0.40.2
-          cache: true
+        #   cache: true
           environments: build
           activate-environment: true
-      - name: Build package
-        run: build
+      - name: Build distributions
+        run: pixi run build-dist
       - name: Upload release distributions
         uses: actions/upload-artifact@v4
         with:
@@ -45,28 +45,3 @@ jobs:
           path: dist/
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-
-#   release:
-#     name: Create release
-#     runs-on: ubuntu-latest
-#     timeout-minutes: 15
-#     environment:
-#       name: pypi
-#       url: https://pypi.org/p/aiida-fans
-#     permissions:
-#       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
-#     steps:
-#       - name: Checkout
-#         uses: actions/checkout@v4
-#       - name: Set up Pixi
-#         uses: prefix-dev/setup-pixi@v0.8.1
-#         with:
-#           pixi-version: v0.40.2
-#           cache: true
-#           environments: build
-#           activate-environment: true
-#       - name: Build package
-#         run: build
-#       - name: Publish package distributions to PyPI
-#         uses: pypa/gh-action-pypi-publish@release/v1
-
