@@ -22,6 +22,10 @@ jobs:
           activate-environment: true
       - name: Run formatter and linter
         run: fmt
+      - name: dummy
+        run: dummy
+      - name: my dummy
+        run: my-dummy
 
 #   test:
 #     name: Perform tests

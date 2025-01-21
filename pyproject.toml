@@ -64,7 +64,7 @@ pypi-dependencies = {aiida-fans = { path = ".", editable = true }}
 pypi-dependencies = {aiida-fans = { path = ".", editable = true }}
 [tool.pixi.feature.fmt]
 dependencies = {ruff = "*"}
-tasks = {fmt = "ruff check"}
+tasks = {fmt = "ruff check", dummy = "echo dummy", my-dummy="echo my-dummy"}
 [tool.pixi.feature.build]
 pypi-dependencies = {build = "*"}
 tasks = {build-dist = "python -m build"}
