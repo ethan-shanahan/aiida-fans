@@ -5,55 +5,94 @@ description = "AiiDA plugin for FANS, an FFT-based homogenization solver."
 urls = {Documentation = "http://aiida-fans.readthedocs.io/en/latest/", Source = "https://github.com/ethan-shanahan/aiida-fans" }
 authors = [{name = "Ethan Shanahan", email = "ethan.shanahan@gmail.com"}]
 readme = "README.md"
-license = "GPL-3.0-only"
-
+license = {file = "LICENSE"}
 classifiers = [
     "Natural Language :: English",
     "Programming Language :: Python",
     "Operating System :: POSIX :: Linux",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-    "Development Status :: 1 - Planning",
+    "Development Status :: 3 - Alpha",
     "Framework :: AiiDA"
 ]
 keywords = ["aiida", "plugin", "fans"]
-
-requires-python = ">= 3.11"
+requires-python = ">=3.11"
 dependencies = [
     "aiida-core>=2.3"
 ]
 
-[project.optional-dependencies]
-docs = [
-    "sphinx"
-]
-
 # Entry Points
-[project.entry-points."aiida.data"]
-"fans" = "aiida_fans.data:FANSParameters"
-[project.entry-points."aiida.calculations"]
-"fans" = "aiida_fans.calculations:FANSCalculation"
-[project.entry-points."aiida.parsers"]
-"fans" = "aiida_fans.parsers:FANSParser"
-[project.entry-points."aiida.cmdline.data"]
-"fans" = "aiida_fans.cli:data_cli"
+[project.entry-points]
+"aiida.data" = { "fans" = "aiida_fans.data:FANSParameters" }
+"aiida.calculations" = { "fans" = "aiida_fans.calculations:FANSCalculation" }
+"aiida.parsers" = { "fans" = "aiida_fans.parsers:FANSParser" }
+"aiida.cmdline.data" = { "fans" = "aiida_fans.cli:data_cli" }
 
-# Build
+# Build System
 [build-system]
-build-backend = "hatchling.build"
-requires = ["hatchling", "hatch-vcs"]
-[tool.hatch.version]
-source = "vcs"
-[tool.hatch.build.hooks.vcs]
-version-file = "src/aiida_fans/_version.py"
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
 
-# Build - Docs
-[tool.hatch.envs.docs]
-features = ["docs"]
-[tool.hatch.envs.docs.scripts]
-build = "sphinx-build -M html docs/source docs/build"
 
-# Formatting Configuration
+# Tools
+
+## Project Tools: pixi
+[tool.pixi.project]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+### pixi: default dependencies (in addition to aiida-core)
+[tool.pixi.dependencies]
+fans = "*"
+[tool.pixi.pypi-dependencies]
+# None
+
+### pixi: default tasks
+[tool.pixi.tasks]
+# None
+
+### pixi: features (in addition to fans)
+[tool.pixi.feature.dev]
+pypi-dependencies = {aiida-fans = { path = ".", editable = true }}
+[tool.pixi.feature.prod]
+pypi-dependencies = {aiida-fans = { path = ".", editable = true }}
+[tool.pixi.feature.fmt]
+dependencies = {ruff = "*"}
+tasks = {fmt = "ruff check", dummy = "echo dummy", my-dummy="echo my-dummy"}
+[tool.pixi.feature.build]
+pypi-dependencies = {build = "*"}
+tasks = {build-dist = "python -m build"}
+[tool.pixi.feature.docs]
+dependencies = {sphinx = "*"}
+tasks = {build-docs = "sphinx-build -M html docs/source docs/build"}
+[tool.pixi.feature.test]
+dependencies = {pytest = "*"}
+tasks = {test = "echo dummy test passes"}
+[tool.pixi.feature.py3]
+dependencies = {python = ">=3.11"}
+[tool.pixi.feature.py311]
+dependencies = {python = "3.11.*"}
+[tool.pixi.feature.py312]
+dependencies = {python = "3.12.*"}
+[tool.pixi.feature.py313]
+dependencies = {python = "3.13.*"}
+
+### pixi: environments
+[tool.pixi.environments]
+dev = { features = ["dev", "fmt", "test"], solve-group = "default" }
+fmt = { features = ["fmt", "py3"], no-default-feature = true }
+build = { features = ["build", "py3"], no-default-feature = true }
+docs = { features = ["docs", "py3"], no-default-feature = true }
+test-py311 = { features = ["prod", "test", "py311"], solve-group = "py311" }
+test-py312 = { features = ["prod", "test", "py312"], solve-group = "py312" }
+test-py313 = { features = ["prod", "test", "py313"], solve-group = "py313" }
+
+
+## Build Tools: setuptools_scm
+[tool.setuptools_scm]
+version_file = "src/aiida_fans/_version.py"
+
+## Style Tools: ruff
 [tool.ruff]
 extend-exclude = ["conf.py"]
 line-length = 120
@@ -63,24 +102,25 @@ ignore = [
     "D417"  # Documentation for every function parameter
 ]
 select = [
-  'E',  # pydocstyle
-  'W',  # pydocstyle
-  "D",  # pydocstyle
-  'F',  # pyflakes
-  'I',  # isort
-  'N',  # pep8-naming
-  'PLC',  # pylint-convention
-  'PLE',  # pylint-error
-  'PLR',  # pylint-refactor
-  'PLW',  # pylint-warning
-  'RUF'  # ruff
+    'E',  # pydocstyle
+    'W',  # pydocstyle
+    "D",  # pydocstyle
+    'F',  # pyflakes
+    'I',  # isort
+    'N',  # pep8-naming
+    'PLC',  # pylint-convention
+    'PLE',  # pylint-error
+    'PLR',  # pylint-refactor
+    'PLW',  # pylint-warning
+    'RUF'  # ruff
 ]
-# Allow unused variables when underscore-prefixed.
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-[tool.ruff.lint.pydocstyle]
-convention = "google"
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"  # Allow unused variables when underscore-prefixed.
+pydocstyle = {convention = "google"}
 
-# Testing Configuration
+## Test Tools: pytest
 [tool.pytest.ini_options]
 [tool.coverage]
 source = ["src/aiida_fans"]
+
+## Docs Tools: sphinx
+# None

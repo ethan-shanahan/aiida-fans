@@ -22,7 +22,7 @@ The design goals of this plugin are primarily to provide as simplistic a user ex
 - [ ] documentation expansion
 - [ ] input validation developed in cooperation with the FANS team
 - [ ] file sharing optimisations
-- [ ] greater database integration via output analysis/extraction 
+- [ ] greater database integration via output analysis/extraction
 
 ## Installation
 The plugin is currently unavailable via PyPI at this stage in development, but it is intended to be published upon an upcoming functional release.
