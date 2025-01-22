@@ -821,7 +821,7 @@ packages:
   requires_python: '>=3.9'
 - pypi: .
   name: aiida-fans
-  version: 0.1.dev1+gb1cae51
+  version: 0.1.dev1+gce7b5c3
   sha256: ff10df4fc0e43f3654a18e3c8f35fd180567639e1ffeb16e907050566dfb8da5
   requires_dist:
   - aiida-core>=2.3
