@@ -2,7 +2,7 @@ name: Continuous Integration
 
 on:
   workflow_run:
-    workflows: ["Update Lockfile"]
+    workflows: ["Update Files"]
     types: 
       - completed
     
