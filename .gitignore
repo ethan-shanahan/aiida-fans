@@ -55,5 +55,8 @@ docs/build/
 # Auto-generated during builds
 _version.py
 
+# Auto-generated during pull requests
+diff.md
+
 # Lock file
 *.lock
