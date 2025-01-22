@@ -1,16 +1,13 @@
 name: Continuous Integration
 
 on:
-  workflow_run:
-    workflows: ["Update Files"]
-    types: 
-      - completed
-    
+  pull_request:
+    branches: [main, dev]
+
 jobs:
 
   static-analysis:
     name: Perform static analysis
-    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -20,7 +17,7 @@ jobs:
         uses: prefix-dev/setup-pixi@v0.8.1
         with:
           pixi-version: v0.40.2
-          cache: false #true
+          cache: false
           environments: fmt
           activate-environment: true
       - name: Run formatter and linter
@@ -31,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
-      matrix: 
+      matrix:
         environment: [test-py311, test-py312]
     steps:
       - name: Checkout
@@ -40,7 +37,7 @@ jobs:
         uses: prefix-dev/setup-pixi@v0.8.1
         with:
           pixi-version: v0.40.2
-          cache: false #true
+          cache: false
           environments: ${{ matrix.environment }}
           activate-environment: true
       - name: Run tests
@@ -57,7 +54,7 @@ jobs:
         uses: prefix-dev/setup-pixi@v0.8.1
         with:
           pixi-version: v0.40.2
-          cache: false #true
+          cache: false
           environments: docs
           activate-environment: true
       - name: Build docs

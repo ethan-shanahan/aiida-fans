@@ -45,17 +45,11 @@ platforms = ["linux-64"]
 [tool.pixi.dependencies]
 fans = "*"
 [tool.pixi.pypi-dependencies]
-# aiida-fans = { path = ".", editable = true }
-
-# [tool.pixi.feature.default]
-# dependencies = { python = ">=3.11", aiida_core = ">=2.3", fans = "*" }
-
+# None
 
 ### pixi: default tasks
 [tool.pixi.tasks]
-# fmt = ""
-# lint = ""
-# publish = { cmd = "" }
+# None
 
 ### pixi: features (in addition to fans)
 [tool.pixi.feature.dev]
@@ -82,8 +76,6 @@ dependencies = {python = "3.11.*"}
 dependencies = {python = "3.12.*"}
 [tool.pixi.feature.py313]
 dependencies = {python = "3.13.*"}
-[tool.pixi.feature.dummy]
-tasks = {dum = "echo dummy task"}
 
 ### pixi: environments
 [tool.pixi.environments]
@@ -93,7 +85,7 @@ build = { features = ["build", "py3"], no-default-feature = true }
 docs = { features = ["docs", "py3"], no-default-feature = true }
 test-py311 = { features = ["prod", "test", "py311"], solve-group = "py311" }
 test-py312 = { features = ["prod", "test", "py312"], solve-group = "py312" }
-# test-py313 = { features = ["prod", "test", "py313"], solve-group = "py313" }
+test-py313 = { features = ["prod", "test", "py313"], solve-group = "py313" }
 
 
 ## Build Tools: setuptools_scm
@@ -131,3 +123,4 @@ pydocstyle = {convention = "google"}
 source = ["src/aiida_fans"]
 
 ## Docs Tools: sphinx
+# None
