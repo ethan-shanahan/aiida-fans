@@ -29,7 +29,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        environment: [test-py311, test-py312]
+        environment: [test-py311, test-py312, test-py313]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
