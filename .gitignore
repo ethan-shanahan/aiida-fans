@@ -59,4 +59,4 @@ _version.py
 diff.md
 
 # Lock file
-# *.lock
+*.lock
