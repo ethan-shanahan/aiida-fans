@@ -1,24 +1,26 @@
-name: Update Lockfile
-
-permissions: 
-  contents: write
+name: Update files
 
 on:
   pull_request:
     branches: [main, dev]
 
+permissions: 
+  contents: write
+
 jobs:
   update-lock:
+    name: Update lockfile
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout repo
-      - uses: actions/checkout@v4
+        uses: actions/checkout@v4
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.8.1
         with:
           pixi-version: v0.40.2
           run-install: false
-      - name: Update lockfile
+      - name: Pixi update
         run: |
           set -o pipefail
           pixi update --json | pixi exec pixi-diff-to-markdown >> diff.md
