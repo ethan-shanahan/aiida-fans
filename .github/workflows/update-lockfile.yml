@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.8.1
         with:
@@ -26,7 +28,7 @@ jobs:
           pixi update --json | pixi exec pixi-diff-to-markdown >> diff.md
       - name: Commit lockfile
         run: |
-          git config --global user.name '${{ github.actor }}'
-          git config --global user.email '${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com'
+          git config --local user.name ${{ github.actor }}
+          git config --local user.email ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com
           git commit -aF diff.md
           git push
