@@ -62,7 +62,7 @@ code.
    :caption: Usage
 
    usage/landing
-   usage/demonstration
+   usage/tutorial
    usage/API
 
 *************
