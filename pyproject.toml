@@ -63,7 +63,7 @@ tasks = {fmt = "ruff check", dummy = "echo dummy", my-dummy="echo my-dummy"}
 pypi-dependencies = {build = "*"}
 tasks = {build-dist = "python -m build"}
 [tool.pixi.feature.docs]
-dependencies = {sphinx = "*"}
+dependencies = {sphinx = "*", sphinx-book-theme = "*"}
 tasks = {build-docs = "sphinx-build -M html docs/source docs/build"}
 [tool.pixi.feature.test]
 dependencies = {pytest = "*"}
