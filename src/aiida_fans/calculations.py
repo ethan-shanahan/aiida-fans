@@ -3,13 +3,13 @@
 from json import dump
 from typing import Any, Callable
 
+import h5py
 from aiida.common.datastructures import CalcInfo, CodeInfo
 from aiida.common.folders import Folder
 from aiida.engine import CalcJob
 from aiida.engine.processes.process_spec import CalcJobProcessSpec
 from aiida.orm import ArrayData, Dict, Float, Int, List, SinglefileData, Str
 from plumpy.utils import AttributesFrozendict
-import h5py
 
 from aiida_fans.helpers import InputEncoder
 
