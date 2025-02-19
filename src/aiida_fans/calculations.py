@@ -3,6 +3,7 @@
 from json import dump
 from typing import Any, Callable
 
+import h5py
 from aiida.common.datastructures import CalcInfo, CodeInfo
 from aiida.common.folders import Folder
 from aiida.engine import CalcJob
@@ -199,7 +200,15 @@ class FANSCalculation(CalcJob):
         Returns:
             CalcInfo: the data to be passed to the ExecManager
         """
-        # Generating the input file.
+        # Write Microstructure Subset to Folder
+        datasetname : str = self.inputs.microstructure.datasetname.value
+        with folder.open("microstructure.h5","bw") as f_dest:
+            with h5py.File(f_dest,"w") as h5_dest:
+                with self.inputs.microstructure.file.open(mode="rb") as f_src:
+                    with h5py.File(f_src,'r') as h5_src:
+                        h5_src.copy(datasetname, h5_dest, name=datasetname)
+
+        # Write input.json to Folder
         json_to_be = dict(self.inputs)
         del json_to_be["code"], json_to_be["metadata"]
         to_fix = {}
@@ -215,7 +224,7 @@ class FANSCalculation(CalcJob):
             if key == "microstructure":
                 for k, v in value.items():
                     if k == "file":
-                        to_add[f"ms_{k}name"] = v
+                        to_add[f"ms_{k}name"] = "microstructure.h5"
                     else:
                         to_add[f"ms_{k}"] = v
 
@@ -235,18 +244,17 @@ class FANSCalculation(CalcJob):
         # Specifying calc info.
         calcinfo = CalcInfo()
         calcinfo.codes_info = [codeinfo]
-        calcinfo.local_copy_list = [
-            (
-                self.inputs.microstructure.file.uuid,
-                self.inputs.microstructure.file.filename,
-                self.inputs.microstructure.file.filename,
-            )
-        ]
+        calcinfo.local_copy_list = []
         calcinfo.remote_copy_list = []
         calcinfo.retrieve_list = [
             self.options.input_filename + ".log",
             self.options.input_filename + ".err",
-            self.options.output_filename,
+        ]
+        calcinfo.retrieve_temporary_list = [
+            self.options.output_filename
+        ]
+        calcinfo.provenance_exclude_list = [
+            "microstructure.h5"
         ]
 
         return calcinfo

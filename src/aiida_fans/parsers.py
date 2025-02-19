@@ -1,5 +1,7 @@
 """Parsers provided by aiida_fans."""
 
+from pathlib import Path
+
 from aiida.engine import ExitCode
 from aiida.orm import SinglefileData
 from aiida.parsers.parser import Parser
@@ -17,18 +19,24 @@ class FANSParser(Parser):
         Returns:
             ExitCode: non-zero exit code, if parsing fails
         """
+        retrieved_temporary_folder = Path(kwargs["retrieved_temporary_folder"])
         output_filename = self.node.get_option("output_filename")
+
+        # Check that output_filename is valid
+        if (type(output_filename) is not str) or (output_filename == ""):
+            return self.exit_codes.ERROR_INVALID_OUTPUT
 
         # Check that folder content is as expected.
         files_retrieved = set(self.retrieved.list_object_names())
-        files_expected = {output_filename}
+        files_expected = set()#{output_filename}
         if not files_expected <= files_retrieved:
             self.logger.error(f"Found files '{files_retrieved}', expected to find '{files_expected}'")
-            return self.exit_codes.ERROR_MISSING_OUTPUT_FILES
+            return self.exit_codes.ERROR_MISSING_OUTPUT
 
-        # Track the output file.
-        self.logger.info(f"Parsing '{output_filename}'")
-        with self.retrieved.open(output_filename, "rb") as handle:
+        # Add output HDF5 file to repository.
+        output_path = retrieved_temporary_folder / output_filename
+        self.logger.info(f"Parsing '{output_path}'")
+        with output_path.open("rb") as handle:
             output_node = SinglefileData(file=handle)
         self.out("results", output_node)
 
