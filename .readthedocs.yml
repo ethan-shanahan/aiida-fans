@@ -31,9 +31,3 @@ sphinx:
 #       path: .
 #       extra_requirements:
 #         - docs
-# python:
-#   install:
-#     - method: pip
-#       path: .
-#       extra_requirements:
-#         - docs
