@@ -1,8 +1,6 @@
 """CalcJob subclasses for aiida-fans calculations."""
 
 from json import dump
-from pathlib import Path
-from shutil import copyfileobj
 
 from aiida.common.datastructures import CalcInfo, CodeInfo
 from aiida.common.folders import Folder
@@ -57,7 +55,7 @@ class FansCalculation(CalcJob):
         spec.input("error_parameters.type", valid_type=Str)
         spec.input("error_parameters.tolerance", valid_type=Float)
         ## Macroscale Loading Conditions
-        spec.input("macroscale_loading", valid_type=List)
+        spec.input_namespace("macroscale_loading", dynamic=True, valid_type=Dict)
 
         # Output Ports
         spec.output("output", valid_type=SinglefileData)
