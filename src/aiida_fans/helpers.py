@@ -11,8 +11,8 @@ def make_input_dict(job: CalcJob) -> dict[str, Any]:
     return {
         ## Microstructure definition
         "microstructure": {
-            "filepath": job.inputs.microstructure.file.get_remote_path(),
-            "datasetname": job.inputs.microstructure.datasetname.value,
+            "filepath": job.inputs.microstructure.data.file_path,
+            "datasetname": job.inputs.microstructure.data.dataset_name,
             "L": job.inputs.microstructure.L.get_list(),
         },
         ## Problem type and material model

@@ -27,7 +27,7 @@ class FansParser(Parser):
 
         with h5File(output_path) as h5:
             results = h5[
-                self.node.inputs.microstructure.datasetname.value + "_results/" + self.node.get_option("results_prefix")
+                self.node.inputs.microstructure.data.dataset_name + "_results/" + self.node.get_option("results_prefix")
             ]
             results.visititems(self.parse_h5)
 
