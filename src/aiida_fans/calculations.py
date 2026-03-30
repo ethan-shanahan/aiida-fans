@@ -6,9 +6,10 @@ from aiida.common.datastructures import CalcInfo, CodeInfo
 from aiida.common.folders import Folder
 from aiida.engine import CalcJob
 from aiida.engine.processes.process_spec import CalcJobProcessSpec
-from aiida.orm import Dict, Float, Int, List, RemoteData, SinglefileData, Str
+from aiida.orm import Dict, Float, Int, List, SinglefileData, Str
 from h5py import File as h5File
 
+from aiida_fans.data import MicrostructureData
 from aiida_fans.helpers import make_input_dict
 
 
@@ -39,8 +40,7 @@ class FansCalculation(CalcJob):
         # Input Ports
         ## Microstructure Definition
         spec.input_namespace("microstructure")
-        spec.input("microstructure.file", valid_type=RemoteData)
-        spec.input("microstructure.datasetname", valid_type=Str)
+        spec.input("microstructure.data", valid_type=MicrostructureData)
         spec.input("microstructure.L", valid_type=List)
         ## Problem Type and Material Model
         spec.input("problem_type", valid_type=Str)
@@ -69,12 +69,12 @@ class FansCalculation(CalcJob):
         input_dict = make_input_dict(self)
         if self.options.fragment_microstructure:
             input_dict["microstructure"]["filepath"] = "microstructure.h5"
-            datasetname: str = self.inputs.microstructure.datasetname.value
+            dataset_name: str = self.inputs.microstructure.data.dataset_name
             with folder.open("microstructure.h5", "bw") as f_dest:
                 with h5File(f_dest, "w") as h5_dest:
-                    with open(self.inputs.microstructure.file.get_remote_path(), mode="rb") as f_src:
+                    with open(self.inputs.microstructure.data.file_path, mode="rb") as f_src:
                         with h5File(f_src, "r") as h5_src:
-                            h5_src.copy(datasetname, h5_dest, name=datasetname)
+                            h5_src.copy(dataset_name, h5_dest, name=dataset_name)
         with folder.open(self.options.input_filename, "w", "utf8") as json:
             dump(input_dict, json, indent=4)
 
