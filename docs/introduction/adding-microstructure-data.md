@@ -8,26 +8,30 @@ wget https://github.com/DataAnalyticsEngineering/AiiDA-FANS/raw/refs/heads/main/
 
 Alternatively, you can visit the [FANS repository](https://github.com/DataAnalyticsEngineering/FANS) for more information and sample microstructures.
 
-Since realistic microstructure files tend to be extremely big, saving such files in an AiiDA profile has some significant drawbacks. As such, you are required to put the microstructure file on the same machine as where you intend to run FANS. We recommend you locate it in the working directory of the AiiDA computer you created, within a subdirectory called "microstructures/".
+Since realistic microstructure files tend to be extremely large, saving such files in an AiiDA profile has some significant drawbacks. As such, we strongly recommend you put the microstructure file on the same machine as where you intend to run FANS. You may place it inside the working directory of the AiiDA computer you created, within a subdirectory called "microstructures/".
 
-Once you have a microstructure file, you must create a `RemoteData` node like so:
+Once you have a microstructure file, you must create a `MicrostructureData` node like so:
 
 ```python
 from aiida import load_profile
-from aiida.orm import RemoteData, load_computer
+from aiida.orm import load_computer
+from aiida.plugins import DataFactory
 
 load_profile()
 
-COMPUTER_LABEL = "localhost"
 MICROSTRUCTURE_PATH = "/path/to/microstructures/ms-example.h5"
+DATASET_NAME = "/dset_0/image"
+COMPUTER_LABEL = "localhost"
 
-RemoteData(
-    remote_path=MICROSTRUCTURE_PATH,
-    computer=load_computer(COMPUTER_LABEL),
-    label="microstructure.file",
+MicrostructureData = DataFactory("fans.microstructure")
+MicrostructureData(
+    MICROSTRUCTURE_PATH,
+    DATASET_NAME,
+    computer=load_computer(label=COMPUTER_LABEL),
+    label="microstructure.data"
 ).store()
 ```
 
-You can write this in a python script and run it, or use AiiDA's interactive shell with `verdi shell`. If you use the interactive shell, you can omit `load_profile` as AiiDA will automatically load the default profile. Remember to change `COMPUTER_LABEL` and `MICROSTRUCTURE_PATH` to the appropriate values. After storing the node, you can check the nodes on your profile with `verdi node list` and expose details of a particular node with `verdi node show <pk>`.
+You can write this in a python script and run it, or use AiiDA's interactive shell with `verdi shell`. If you use the interactive shell, you can omit `load_profile` and `import DataFactory` as AiiDA will automatically loads the default profile and imports some useful tools. Remember to change `MICROSTRUCTURE_PATH`, `DATASET_NAME`, and `COMPUTER_LABEL` to their appropriate values. After storing the node, you can check the nodes on your profile with `verdi node list` and expose details of a particular node with `verdi node show <pk>`.
 
-To reuse this node when executing `FansCalculation` jobs, you can use `load_node(label="microstructure.file")` as long as only one node exists with the provided label. If you intend on using multiple microstructure files, assign them identifiable labels.
+To reuse this node when executing `FansCalculation` jobs, you can use `load_node(label="microstructure.data")` as long as only one node exists with the provided label. If you intend on using multiple files and/or multiple groups within individual files, assign each node a distinct and identifiable label.

@@ -9,7 +9,7 @@ verdi node list --project id label node_type
 Once you have run at least one simulation, you will notice a `CalcJobNode`, labelled "FANS" by default. This represents the execution of a FANS process. You may want to visualise a portion of the graph connected to this node.
 
 ```sh
-verdi node graph generate <pk of CalcJobNode>
+verdi node graph generate <pk of CalcJobNode> --identifier label
 ```
 
 The pdf this creates arranges the input nodes on top, the calculation node in the middle, and the output nodes below.
@@ -20,7 +20,7 @@ To quickly interact with a specific nodes, you can enter the `verdi shell`. This
 
 ### 1. `RemoteData`
 
-This node refers to the specific working directory of the process. It is a subdirectory of the working directory you provided when specifying the computer. It is capable of establishing a connection to remote machine to provide access to the original data. For example, you can use this connection to list the objects within the assigned directory.
+This node refers to the specific working directory of the process. It is a subdirectory of the working directory you provided when specifying the computer. It is capable of establishing a connection to remote machine to provide access to the original data. For example, you can use this connection to list the objects within the assigned directory:
 
 ```python
 remote_data.get_remote_path()
@@ -29,7 +29,7 @@ remote_data.listdir()
 
 ### 2. `FolderData`
 
-Similar to the `RemoteData`, this node represents a directory-like object, but unlike the `RemoteData`, this node stores the contents of the directory in the AiiDA repository. With this type of node, you can navigate the directory, add or remove files and folders, and get the contents of files. The plugin stores a FolderData node containing the standard output and standard error files of FANS and the AiiDA scheduler. This is how you can print the standard output of FANS.
+Similar to the `RemoteData`, this node represents a directory-like object, but unlike the `RemoteData`, this node stores the contents of the directory in the AiiDA repository. With this type of node, you can navigate the directory, add or remove files and folders, and get the contents of files. The plugin stores a FolderData node containing the standard output and standard error files of FANS and the AiiDA scheduler. This is how you can print the standard output of FANS:
 
 ```python
 folder_data.list_object_names()
@@ -38,7 +38,7 @@ print(folder_data.get_object_content("FANS.log"))
 
 ### 3. `SinglefileData`
 
-The `SinglefileData` node is much like the `FolderData` node, but, as the name suggests, is for a single file rather than a whole directory. The plugin saves the resulting output hdf5 file from FANS as a `SinglefileData` node. The following is similar to how the plugin's parser extracts the results.
+The `SinglefileData` node is much like the `FolderData` node, but, as the name suggests, is for a single file rather than a whole directory. The plugin saves the resulting output hdf5 file from FANS as a `SinglefileData` node. The following code snippet is similar to how the plugin's parser extracts the results:
 
 ```python
 singlefile_data.filename()

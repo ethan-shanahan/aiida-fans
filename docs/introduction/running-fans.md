@@ -21,11 +21,11 @@ QueryBuilder()
 .all(flat=True)
 ```
 
-but there are dangers herein since if another input parameter happens to have the same value, they would both be fetched. To get around this, you would need to have the foresight to label each node appropriately. Additionally, different data types have different query interfaces, making the overall user experience a challenge.
+but there are dangers herein since if another input parameter happens to have the same value, they would both be fetched. To get around this, you would need to have the foresight to label each node appropriately. Additionally, different data types have different query interfaces, making the overall user experience a challenging one.
 
 ## Using Utilities Instead
 
-In comes the `utils.execute_fans` function. With this function, you can provide the input parameters of FANS as basic pythonic values in a dictionary (with some nuances). Here is what a script to run FANS might look like,
+Introducing the `utils.execute_fans` function. With this function, you can provide the input parameters of FANS as basic pythonic values in a dictionary (with some nuances). Here is what a script to run FANS might look like,
 
 ```python
 from aiida import load_profile
@@ -40,8 +40,7 @@ inputs = {
     "code": load_code("FANS"),  # Code node goes here.
     # Microstructure definition
     "microstructure": {
-        "file": load_node(label="microstructure.file"),  # MS node goes here.
-        "datasetname": "/dset_0/image",
+        "data": load_node(label="microstructure.data"),  # MS node goes here.
         "L": [1.0, 1.0, 1.0],
     },
     # Problem type and material model
@@ -70,6 +69,6 @@ inputs = {
 run_fans(inputs=inputs)
 ```
 
-Note that the `inputs` dictionary closely resembles the input json required by FANS, with two exceptions. These are: the addition of the `"code": load_code("FANS")` entry which is an additional requirement of running any AiiDA `CalcJob`, and the `"microstructure": {"filepath": "path/to/ms.h5", ...` entry which has changed to `"microstructure": {"file": load_node(label="microstructure.file"), ...` according to the section on [Adding Microstructure Data](adding-microstructure-data.md). The final function call to `run_fans` is analogous to the AiiDA `run` function, and there exists a corresponding `submit_fans` function too.
+Note that the `inputs` dictionary closely resembles the input json required by FANS, with two exceptions. These are: the addition of the `"code": load_code("FANS")` entry which is an additional requirement of running any AiiDA `CalcJob`, and the `"microstructure": {"filepath": "path/to/ms.h5", "datasetname": "/path/to/group", ...` entry which has changed to `"microstructure": {"data": load_node(label="microstructure.data"), ...` according to the section on [Adding Microstructure Data](adding-microstructure-data.md). The final function call to `run_fans` is analogous to the AiiDA `run` function, and there exists a corresponding `submit_fans` function too.
 
 The utilities function will first check each non-node entry in the dictionary and try to find an existing node whose value matches that which was provided and whose label matches the dictionary key of that input (using dot notation for embedded dictionaries). Additionally, if there exists a calculation whose inputs perfectly match the inputs provided, confirmation to proceed will be sought.
