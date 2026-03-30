@@ -29,7 +29,7 @@ def make_input_dict(job: CalcJob) -> dict[str, Any]:
             "tolerance": job.inputs.error_parameters.tolerance.value,
         },
         ## Macroscale loading conditions
-        "macroscale_loading": job.inputs.macroscale_loading.get_list(),
+        "macroscale_loading": [load.value for load in job.inputs.macroscale_loading.values()],
         ## Results specification (Optional)
         "results_prefix": job.inputs.metadata.options.results_prefix,
         "results": job.inputs.metadata.options.results,

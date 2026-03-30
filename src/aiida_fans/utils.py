@@ -110,8 +110,10 @@ def convert(ins: dict[str, Any], path: list[str] = []):
     for k, v in ins.items():
         if k == "metadata" or isinstance(v, Node):
             continue
-        if k in ["microstructure", "error_parameters"]:
+        elif k in ["microstructure", "error_parameters"]:
             convert(v, path=[*path, k])
+        elif k == "macroscale_loading":
+            ins[k] = {str(i): generate(k, load) for i, load in enumerate(v)}
         else:
             ins[k] = generate(".".join([*path, k]), v)
 
@@ -126,8 +128,11 @@ def compile_query(ins: dict[str, Any], qb: QueryBuilder) -> None:
     for k, v in ins.items():
         if k == "metadata":
             continue
-        if k in ["microstructure", "error_parameters"] and isinstance(v, dict):
+        elif k in ["microstructure", "error_parameters"] and isinstance(v, dict):
             compile_query(v, qb)
+        elif k == "macroscale_loading" and isinstance(v, dict):
+            for load in v.values():
+                qb.append(cls=type(load), with_outgoing="calc", filters={"pk": load.pk})
         else:
             qb.append(cls=type(v), with_outgoing="calc", filters={"pk": v.pk})
 
