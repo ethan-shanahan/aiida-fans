@@ -208,5 +208,8 @@ diff.md
 # Ignore AiiDA specific files
 .aiida_run
 
+# Ignore marimo specific files
+__marimo__/
+
 # Dedicated folder for personal projects
 **/scratch/
