@@ -1,59 +1,31 @@
-# aiida-fans-tutorial
-Learn how to use aiida-fans in this marimo powered tutorial.
+# AiiDA-FANS-tutorial
 
-## Usage
+[![Open in molab][molab-badge]][molab-link]
 
-Assuming you have FANS, python 3.13, venv, and pip installed on a linux system, the recommended way to use this tutorial is by creating a virtual environment in this directory with the following command:
+Learn how to use AiiDA-FANS in this [marimo][marimo-link]-powered tutorial subpackage.
 
-```
-python -m venv .venv
-```
-Then activate this environment like so:
+## Installation
 
-```
-source .venv/bin/activate
-```
+The recommended way to run this tutorial is to clone the AiiDA-FANS repository, then use [Pixi][Pixi-link] to install the proper environment and run marimo.
 
-You can ensure the the environment was succesfully activated with `which python` and ultimately deactivate the environment with `deactivate` when you're finished.
-
-You may need to install/upgrade pip now with your virtual environment activated. Run the following command:
-
-```
-python -m pip install --upgrade pip
+```sh
+git clone https://github.com/DataAnalyticsEngineering/AiiDA-FANS
+cd AiiDA-FANS
 ```
 
-Once pip is up to date, run the following command to install the tutorial's dependencies:
+The project has been configured to make the next step extremely simple. Once you are in the root directory of the repository, running the tutorial with Pixi is as simple as:
 
-```
-python -m pip install -r requirements.txt
-```
-
-Now you are ready to launch the notebook and begin the tutorial. Run the following command and access the marimo notebook at the port provided:
-
-```
-marimo run tutorial.py
+```sh
+pixi run tutorial
 ```
 
-## Alternative Usage
+This command moves the working directory to `tutorial/` and spins up the marimo notebook server on a localhost port. Pixi automatically installs all the dependencies, including FANS, in an isolated environment (*./.pixi/envs/tutorial*).
 
-### 1. Conda
+Your browser should open to display the notebook. Otherwise, find the URL in marimo's terminal output.
 
-> [!WARNING]  
-> This method is a work-in-progress!
 
-### 2. Pixi
-
-> [!WARNING]  
-> This method is a work-in-progress!
-
-You can use pixi to install everything you need as defined by the pyproject.toml file. It should bundle python, FANS, AiiDA, aiida-fans, and marimo all into a virtual environment located in a .pixi directory. You can proceed to directly begin the tutorial with:
-
-```
-marimo run tutorial.py
-```
-
-Activating the environment may look something like this:
-
-```
-pixi shell --manifest-path ~/FANS/tutorial/pyproject.toml
-```
+<!-- URLs -->
+[molab-badge]: https://marimo.io/molab-shield.svg
+[molab-link]: https://molab.marimo.io/github/DataAnalyticsEngineering/AiiDA-FANS/blob/dev/tutorial/tutorial.py
+[marimo-link]: https://marimo.io/
+[Pixi-link]: https://pixi.sh/latest/
