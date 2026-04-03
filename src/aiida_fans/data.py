@@ -18,14 +18,15 @@ class MicrostructureData(RemoteData):
             **computer (Computer | None, optional): the computer where the file is located. Defaults to None.
         """
         super().__init__(remote_path=file_path, **kwargs)
+        self.base.attributes.set("file_path", file_path)
         self.base.attributes.set("dataset_name", dataset_name)
-
-    @property
-    def dataset_name(self):
-        """Return the dataset group name within the file stored."""
-        return self.base.attributes.get("dataset_name")
 
     @property
     def file_path(self):
         """Return the absolute path the file stored."""
         return self.get_remote_path()
+    
+    @property
+    def dataset_name(self):
+        """Return the dataset group name within the file stored."""
+        return self.base.attributes.get("dataset_name")
