@@ -73,7 +73,8 @@ python-lsp-server = ">=1.14.0,<2"
 websockets = ">=16.0,<17"
 python-lsp-ruff = ">=2.3.0,<3"
 [tool.pixi.feature.marimo.tasks]
-tutorial = "cd tutorial/ && marimo edit tutorial.py"
+tutorial = "cd tutorial/ && marimo run tutorial.py"
+tutorial-edit = "cd tutorial/ && marimo edit tutorial.py"
 
 
 ### pixi: environments
