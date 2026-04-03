@@ -6,6 +6,25 @@ app = marimo.App(width="medium", app_title="AiiDA-FANS Tutorial")
 with app.setup:
     import marimo as mo
     from pathlib import Path
+    from aiida.common import NotExistent
+    from aiida.common import MultipleObjectsError
+    from aiida.orm import load_computer
+    from aiida.plugins import DataFactory
+
+
+    def term(lines: list[str], minimum_height: int = 0):
+        return mo.Html(
+            f"""
+            <pre style="
+                background-color: #1e1e1e; 
+                color: #00ff00; 
+                padding: 15px; 
+                border-radius: 5px; 
+                font-family: 'Courier New', monospace;
+                line-height: 1.5;
+            ">{"\n".join([lines[i] if i < len(lines) else " " for i in range(max(len(lines), minimum_height))])}</pre>
+            """
+        )
 
 
 @app.cell
@@ -200,7 +219,7 @@ def _(profile_settings):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(profile_settings):
     mo.md(rf"""
     **Note:** _on default profiles..._
@@ -355,7 +374,7 @@ def _():
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _():
     code_settings = (
         mo.hstack(
@@ -416,7 +435,7 @@ def _():
     return (code_settings,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(code_settings, computer_settings):
     mo.stop(
         code_settings.value is None or computer_settings.value is None,
@@ -683,12 +702,6 @@ def _():
 
     #     load_profile()
 
-    #     # internal purposes
-    #     import threading
-    #     from aiida.common import NotExistent
-    #     from aiida.common import MultipleObjectsError
-    #     from aiida.orm import QueryBuilder, CalcJobNode
-
 
     # except ImportError:
     #     mo.stop(
@@ -711,8 +724,8 @@ def _():
 
 
 @app.cell(hide_code=True)
-def _():
-    mo.md(r"""
+def _(code_settings):
+    mo.md(rf"""
     Next, we will construct the input dictionary. This will look very similar to the json input file, described [above](#fans-rundown), but with a few key differences.
 
     ```python
@@ -925,6 +938,96 @@ def _():
     return
 
 
+@app.cell
+def _():
+    write_script_button = mo.ui.run_button(label="WRITE")
+    return (write_script_button,)
+
+
+@app.cell
+def _(code_settings, write_script_button):
+    mo.stop(
+        not write_script_button.value,
+        output=mo.md(
+            rf"Write the `submit.py` script to the working directory: {write_script_button}"
+        )
+        .style(text_align="center")
+        .callout(kind="neutral"),
+    )  # run on click
+
+    script_file = Path("submit.py")
+    script = rf"""from aiida import load_profile
+    from aiida.orm import load_code, load_node
+
+    from aiida_fans.utils import run_fans
+
+    load_profile()
+
+    #############################################################################################
+
+    inputs = {{
+        "code": load_code(label="{"FANS" if code_settings.value is None else code_settings.value["label"]}"),
+        "microstructure": {{
+            "data": load_node(label="microstructure.data"),
+            "L": [1.0, 1.0, 1.0]
+        }},
+        "problem_type": "mechanical",
+        "strain_type": "small",
+        "materials": [
+            {{
+                "phases": [0,1],
+                "matmodel": "LinearElasticIsotropic",
+                "material_properties": {{
+                    "bulk_modulus": [62.5000, 222.222],
+                    "shear_modulus": [28.8462, 166.6667]
+                }}
+            }}
+        ],
+        "FE_type": "HEX8",
+        "method": "cg",
+        "n_it": 100,
+        "error_parameters": {{"measure": "Linfinity", "type": "absolute", "tolerance": 1e-10}},
+        "macroscale_loading": [
+            {{
+                "strain_indices": [2, 3, 4, 5],
+                "stress_indices": [0, 1],
+                "strain": [[0.005, 0.0, 0.0, 0.0], [0.010, 0.0, 0.0, 0.0]],
+                "stress": [[0.0, 0.0], [0.0, 0.0]]
+            }}
+        ],
+        "metadata": {{
+            "options": {{
+                "results_prefix": "my_results",
+                "results": [
+                    "stress_average",
+                    "strain_average"
+                ]
+            }}
+        }}
+    }}
+
+    #############################################################################################
+
+    run_fans(inputs)
+    """
+
+    try:
+        script_file.write_text(script)
+
+    except Exception as e:
+        script_file.unlink(missing_ok=True)
+        mo.stop(
+            True,
+            output=mo.md(f"**Error:** {e} : {write_script_button}")
+            .style(text_align="center")
+            .callout(kind="danger"),
+        )
+
+
+    mo.md("**Success!**").style(text_align="center").callout(kind="success")
+    return
+
+
 @app.cell(hide_code=True)
 def _():
     mo.md(rf"""
@@ -948,315 +1051,288 @@ def _():
     verdi node list --project id label node_type
     ```
 
-    To display even more details about a specific node, try running the following on the new `CalcJobNode` representing the FANS calculation.
+    To display even more details about a specific node, try running the following on the new `CalcJobNode` representing the FANS calculation:
 
     ```sh
     verdi node show <pk>
     ```
 
     *Hint: if you've followed along exactly, the `CalcJobNode`'s primary key (pk) should be 14.*
+
+    If you catch the process while it is still running, you should see that the `state` property is "`Waiting`". Once FANS has completed its calculations and AiiDA has processed its results, the `state` property should read "`Finished [0]`". 
     """).callout(kind="info")
-    return
-
-
-@app.cell
-def _(code_settings):
-    calculate_button = mo.ui.run_button(label="RUN", kind="warn")
-
-    get_calc_state, set_calc_state = mo.state(False)
-
-    _code = (
-        r"""
-    FANSCalculation = CalculationFactory("fans")      # get the plugin's process class
-    code = {"code": load_code('"""
-        + f"{"<code_label>')}" if code_settings.value is None else code_settings.value['label'] + "')}": <22}"
-        + """ # get the existing code node
-
-    for sp, dsp, mpp in product(some_params, ms_datasetname_params, material_properties_params):
-        all_params = sp | dsp | mpp                   # merge this permutation of params
-        run(FANSCalculation, all_params | code)       # finally run the job
-    """
-    )
-
-    mo.md(rf"""
-    Once these lists are defined, we use the `product` function to explore every permutation of their contents. Each permutation is coupled with the code node, defined earlier, and given to the `run` function with the plugin specific `FANSCalculation` process class.
-
-    Much like last time, we aren't checking if these calculations have already been run, so clicking the button below repeatedly will request duplicate calulations to be run and duplicate results will be generated.
-
-    {calculate_button}
-
-    ```py
-    {_code}
-    ```
-    """)
-    return calculate_button, get_calc_state, set_calc_state
-
-
-@app.cell
-def calculations(
-    CalculationFactory,
-    ConfigurationError,
-    calculate_button,
-    code_settings,
-    load_code,
-    material_properties_params,
-    ms_datasetname_params,
-    product,
-    run,
-    set_calc_state,
-    some_params,
-):
-    mo.stop(not calculate_button.value)
-
-    FANSCalculation = CalculationFactory("fans")  # get the plugin's process class
-    try:  # get the existing code node
-        code = {"code": load_code(code_settings.value["label"])}
-    except ConfigurationError:
-        mo.stop(
-            True,
-            output=mo.md(
-                "**Your code failed to load properly!**\n\nPlease submit the 'Define a Code' form in the [AiiDA Setup](aiida-setup) section."
-            )
-            .style(text_align="center")
-            .callout(kind="danger"),
-        )
-
-    for sp, dsp, mpp in mo.status.progress_bar(
-        list(
-            product(some_params, ms_datasetname_params, material_properties_params)
-        ),
-        title="Calculating Jobs...",
-        completion_title="Finished!",
-    ):
-        all_params = sp | dsp | mpp  # merge this permutation of params
-        run(FANSCalculation, all_params | code)  # finally run the job
-    else:
-        set_calc_state(True)
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    query_button = mo.ui.run_button(label="RUN")
-
-    get_query_state, set_query_state = mo.state(False)
-
-    mo.md(rf"""
-    ## Analysing the Results
-
-    Once our calculations are complete, we can make use of the QueryBuilder again to find and analyse the results.
-
-    {query_button}
+    mo.md(r"""
+    MOOOOOOORREEEEEEEEE
     """)
-    return get_query_state, query_button, set_query_state
-
-
-@app.cell(hide_code=True)
-def _(query_button, set_query_state):
-    #! DO NOT DELETE
-    # This cell saves the query_button state to allow for user confirmation!
-    mo.stop(not query_button.value)  # run on click
-    set_query_state(True)
     return
 
 
 @app.cell(hide_code=True)
-def _(get_calc_state, set_calc_state):
-    #! DO NOT DELETE
-    # This cell triggers the following cell upon confirmation!
-    set_calc_state(get_calc_state())
+def _():
+    mo.md(r"""
+    ## Analysing the Results
+
+    Once our calculations are complete, you can use can use a few ways to inspect the output or otherwise handle the data.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ### 1. Using the CLI
+
+    The plugin's parser is capable of extracting certain results from the `output.h5` file produced by FANS. If the strain and stress averages were requested, then a `results` node should be accessible. The verdi CLI tool has a quick way of showing the attributes (the stored values) of individual nodes. Run this command, providing the primary key of the results node (probably 18):
+
+    ```sh
+    verdi node attributes <pk>
+    ```
+
+    You should see the strain average and stress average vectors for both time steps of the loading conditions we specified.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ### 2. Using Scripting
+
+    This approach is useful for conglomerating various nodes by comparison to some metric. First, let's import some important components:
+
+    ```python
+    from aiida import load_profile
+    from aiida.orm import QueryBuilder, CalcJobNode
+
+    load_profile()
+    ```
+    """)
     return
 
 
 @app.cell
-def _(
-    CalcJobNode,
-    Int,
-    QueryBuilder,
-    Str,
-    get_calc_state,
-    get_query_state,
-    set_calc_state,
-    set_query_state,
-):
-    confirm = mo.ui.button(
-        label="Are you sure?", on_click=lambda _: set_calc_state(True)
-    )
-    are_you_sure = mo.md(rf"""
-    It seems the jobs were not calculated in this session. If you are sure that they have been completed, you may proceed.
-
-    {confirm}
-    """).callout(kind="danger")
-    mo.stop(not get_query_state())
-    mo.stop(not get_calc_state(), output=are_you_sure)
-    set_query_state(False)
+def _():
+    import_query_button = mo.ui.run_button(label="RUN")
+    return (import_query_button,)
 
 
-    # QUERY:
-
-    calc = QueryBuilder().append(CalcJobNode).first(flat=True)
-    # Inputs
-    ins = list(calc.inputs._get_keys())
-    ins = "<br>".join(ins)
-    # Microstructure Dataset Name
-    ms_datasetname = calc.inputs.microstructure.datasetname.value
-    # Material Properties
-    mat_props = {
-        "b": (
-            calc.inputs.material_properties["bulk_modulus"][0],
-            calc.inputs.material_properties["bulk_modulus"][1],
+@app.cell
+def _(ProfileConfigurationError, import_query_button):
+    mo.stop(
+        not import_query_button.value,
+        output=import_query_button.style(text_align="center").callout(
+            kind="neutral"
         ),
-        "s": (
-            calc.inputs.material_properties["shear_modulus"][0],
-            calc.inputs.material_properties["shear_modulus"][1],
+    )  # run on click
+
+    try:
+        from aiida import load_profile
+        from aiida.orm import QueryBuilder, CalcJobNode
+
+        load_profile()
+
+    except ImportError:
+        mo.stop(
+            True,
+            output=mo.md(
+                f"**Imports failed to load properly!** {import_query_button}"
+            )
+            .style(text_align="center")
+            .callout(kind="danger"),
+        )
+
+    except ProfileConfigurationError:
+        mo.stop(
+            True,
+            output=mo.md(
+                f"**Profile failed to load properly!** {import_query_button}"
+            )
+            .style(text_align="center")
+            .callout(kind="danger"),
+        )
+
+    mo.md("**Success!**").style(text_align="center").callout(kind="success")
+    return CalcJobNode, QueryBuilder
+
+
+@app.cell
+def _():
+    mo.md(r"""
+    Next, let's perform a simple query to fetch all the nodes of type `CalcJobNode`. This is the AiiDA data type given to nodes that represent the exectution of an individual job. Here are the three parts that go into such a query:
+
+    1. `QueryBuilder()`: Initializes the query engine which acts as the interface to search and filter through the AiiDA database.
+    2. `.append(CalcJobNode)`: Adds a requirement to the query to search for all nodes that are instances of a `CalcJobNode`.
+    3. `.all(flat=True)`: Executes the query and returns all matching results in a single, flattened list rather than a nested list of lists.
+
+    Altogether:
+
+    ```python
+    QueryBuilder().append(CalcJobNode).all(flat=True)
+    ```
+    """)
+    return
+
+
+@app.cell
+def _():
+    simple_query_button = mo.ui.run_button(label="RUN")
+    return (simple_query_button,)
+
+
+@app.cell
+def _(CalcJobNode, QueryBuilder, simple_query_button):
+    mo.stop(
+        not simple_query_button.value,
+        output=mo.vstack(
+            [
+                simple_query_button.style(text_align="center").callout(
+                    kind="neutral"
+                ),
+                term(["OUTPUT..."], 2),
+            ]
         ),
-    }
-    # Outputs
-    outs = list(calc.outputs._get_keys())
-    outs = ", ".join(outs)
-    # Stresses and Strains
-    log = calc.outputs.retrieved.get_object_content("input.json.log").split("\n")
-    stresses = []
-    strains = []
-    for ln in log:
-        if "Effective Stress" in ln:
-            stresses.append(
-                list(
-                    map(
-                        lambda n: round(float(n), ndigits=3),
-                        ln.lstrip("# Effective Stress .. ")
-                        .replace("(", "")
-                        .replace(")", "")
-                        .strip(" ")
-                        .split(" "),
-                    )
-                )
-            )
-        if "Effective Strain" in ln:
-            strains.append(
-                list(
-                    map(
-                        lambda n: round(float(n), ndigits=3),
-                        ln.lstrip("# Effective Strain .. ")
-                        .replace("(", "")
-                        .replace(")", "")
-                        .strip(" ")
-                        .split(" "),
-                    )
-                )
-            )
-    stress_strains = [
-        {"stress": stress, "strain": strain}
-        for stress, strain in zip(stresses, strains)
-    ]
-    # Filtered Query
-    filtered_calcs = (
-        QueryBuilder()
-        .append(  # In the first `.append` we look for nodes
-            Str,  # of the `Str` AiiDA datatype,
-            filters={  # then apply the filters for:
-                Int.fields.label: "ms_datasetname",  #
-                Int.fields.value: {"==": "/dset_0/image"},  #
-            },
-            tag="ms_datasetname",  # The `tag` is an internal reference.
+    )  # run on click
+
+    try:
+        simple_query = QueryBuilder().append(CalcJobNode).all(flat=True)
+
+    except Exception as e:
+        mo.stop(
+            True,
+            output=mo.vstack(
+                [
+                    mo.md(f"**Error: {e}** {simple_query_button}")
+                    .style(text_align="center")
+                    .callout(kind="danger"),
+                    term(["OUTPUT..."], 2),
+                ]
+            ),
         )
-        .append(  # In the second `.append` we look for nodes
-            CalcJobNode,  # of the `CalcJobNode` AiiDA datatype,
-            with_incoming="ms_datasetname",  # and specify required incoming nodes with
-            # the `tag` we defined above.
-        )
-        .all(flat=True)
+
+
+    mo.vstack(
+        [
+            mo.md(f"**Success!** {simple_query_button}")
+            .style(text_align="center")
+            .callout(kind="success"),
+            term([f"> {sq}" for sq in simple_query], 2),
+        ]
     )
+    return
 
 
-    # DISPLAY:
-
-    _code = r"""
-    QueryBuilder(
-    ).append(                              # In the first `.append` we look for nodes
-        Str,                               # of the `Str` AiiDA datatype,
-        filters={                          # then apply the filters for:
-            Int.fields.label: "ms_datasetname", # 
-            Int.fields.value: {"==": "dset_0"}  #
-        },
-        tag="ms_datasetname"               # The `tag` is an internal reference.
-
-    ).append(                              # In the second `.append` we look for nodes
-        CalcJobNode,                       # of the `CalcJobNode` AiiDA datatype,
-        with_incoming="ms_datasetname"     # and specify required incoming nodes with
-                                           # the `tag` we defined above.
-    ).all(flat=True)
-    """
-
+@app.cell(hide_code=True)
+def _():
     mo.md(rf"""
-    ### Fetch a single calculation...
+    Finally, let's perform a slightly more advanced query that illustrates how you can leverage the SQL database to conglomerate swathes of nodes matching any criteria you like. With this query we aim to gather the list of all CalcJobNodes who use a certain microstructure dataset. To be exact, a microstructure dataset that fits this description:
 
-    We will begin by querying the database for the first `CalcJobNode` present. This is the AiiDA datatype given to nodes that represent the exectution of an individual job.
-
-    ```py
-    calc = QueryBuilder().append(CalcJobNode).first(flat=True)
+    ```python
+    MicrostructureData(
+        "{str(Path("tutorial_microstructure.h5").absolute())}",
+        "/dset_0/image",
+    )
     ```
 
-    From this calculation job node we can gleam some identifying information, such as the type of calculation job (i.e. the process label) or its primary key in the database. Additionally, we can list the available inputs and outputs provided by this kind of job.
+    This will be done much in the same way as the previous query, except this time we will chain it together with another `.append()` call. The new `.append()` queries for nodes of the type `MicrostructureData` and filters them based off the `file_path` and `dataset_name` attributes. The `tag` parameter allows us to request, in the following `.append()`, nodes of type `CalcJobNode` with specific incoming nodes.
 
-    |                    |                                       |
-    |--------------------|---------------------------------------|
-    | **Process Label:** | {calc.process_label}                  |
-    | **Primary Key:**   | {calc.pk}                             |
-    | **Inputs:**        | {ins}                             |
-    | **Outputs:**       | {outs} |
+    ```python
+    MicrostructureData = DataFactory('fans.microstructure')
+    QueryBuilder(
+    ).append(
+        MicrostructureData,
+        filters={{
+            "attributes.remote_path": "{str(Path("tutorial_microstructure.h5").absolute())}",
+            "attributes.dataset_name": "/dset_0/image",
+        }},
+        tag="ms"
+    ).append(
+        CalcJobNode,
+        with_incoming="ms"
+    ).all(flat=True)
+    ```
+    """)
+    return
 
-    ### Identify some input parameters...
 
-    Of course, it would be helpful to know exactly what inputs were used in the calculation of this particular job. The inputs can be accessed via dot notation which provides the respective values as AiiDA datatypes.
+@app.cell
+def _():
+    complex_query_button = mo.ui.run_button(label="RUN")
+    return (complex_query_button,)
 
-    When it comes to the microstructure dataset name, the inputs's value is accessed through the `value` attribute.
 
-    ```py
-    calc.inputs.microstructure.datasetname.value
+@app.cell
+def _(CalcJobNode, QueryBuilder, complex_query_button):
+    mo.stop(
+        not complex_query_button.value,
+        output=mo.vstack(
+            [
+                complex_query_button.style(text_align="center").callout(
+                    kind="neutral"
+                ),
+                term(["OUTPUT..."], 2),
+            ]
+        ),
+    )  # run on click
+
+    try:
+        MicrostructureData = DataFactory("fans.microstructure")
+        complex_query = (
+            QueryBuilder()
+            .append(
+                MicrostructureData,
+                filters={
+                    "attributes.file_path": str(
+                        Path("tutorial_microstructure.h5").absolute()
+                    ),
+                    "attributes.dataset_name": "/dset_0/image",
+                },
+                tag="ms",
+            )
+            .append(CalcJobNode, with_incoming="ms")
+            .all(flat=True)
+        )
+
+    except Exception as e:
+        mo.stop(
+            True,
+            output=mo.vstack(
+                [
+                    mo.md(f"**Error: {e}** {complex_query_button}")
+                    .style(text_align="center")
+                    .callout(kind="danger"),
+                    term(["OUTPUT..."], 2),
+                ]
+            ),
+        )
+
+    mo.vstack(
+        [
+            mo.md(f"**Success!** {complex_query_button}")
+            .style(text_align="center")
+            .callout(kind="success"),
+            term([f"> {cq}" for cq in complex_query], 2),
+        ]
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ### 3. Using Graphs
+
+    The last piece of advice we will mention here is about how to visualise the graph of your database. The `verdi` CLI tool supplies a command to generate graph data in a few forms. For example, you could request that it outputs the graph in the DOT language format, and use your own tools to visualise, manipulate, and interrogate the data. By default, `verdi` will immediately create a `.pdf` file showing the graph connected to a root node you specify. Try running this command on a `CalcJobNode` we have produced.
+
+    ```sh
+    verdi node graph generate --show <pk>
     ```
 
-    | | |
-    |-|-|
-    | **Microstructure Dataset Name:** | {ms_datasetname} |
-
-    In the case of the material properties, this attribute takes the form an AiiDA `Dict` which has methods just like an ordinary `dict`.
-
-    ```py
-    calc.inputs.material_properties.items()
-    ```
-
-    | | | |
-    |-|-|-|
-    |Bulk Modulus: | {mat_props["b"][0]} | {mat_props["b"][1]} |
-    |Shear Modulus: | {mat_props["s"][0]} | {mat_props["s"][1]} |
-
-    ### Effective stress and strain...
-
-    To extract the effective stress and strain per loading condition from the output of FANS, we can use the `std_out` it produces. This text is stored in the `retrieved` folder output. We can get its contents and parse it to determine our results.
-
-    ```py
-    log = calc.outputs.retrieved.get_object_content("input.json.log")
-    for ln in log:
-        ...
-    ```
-
-    | Loading <br> Condition: | Stress: | Strain:                       |
-    |---|-------------------------------|-------------------------------|
-    | **1** | {stress_strains[0]["stress"]} | {stress_strains[0]["strain"]} |
-
-    ### Perform a filtered query...
-
-    Aside from manually examining the inputs and outputs of individual calculation jobs, the `QueryBuilder` offers the ability to filter your query based on a variety of criteria. In this instance, we query for all jobs that used the "dset_0" microstructure dataset. This time, we are given back a list of calculation job nodes to do with as we please.
-
-    ```py
-    {_code}
-    ```
-
-    | | | | | |
-    |-|-|-|-|-|
-    | **Primary Keys:** | {filtered_calcs[0].pk} | {filtered_calcs[1].pk} | {filtered_calcs[2].pk} | {filtered_calcs[3].pk} |
-
+    If the file doesn't open automatically, you should be able to find it in your working directory, titled "`<pk>.dot.pdf`".
     """)
     return
 
