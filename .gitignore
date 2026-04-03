@@ -198,15 +198,20 @@ diff.md
 *.lock
 
 # Project specific files
+*.pdf
+submit.py
 *.h5
-!ms-example.h5
+!tutorial_microstructure.h5
 *.yaml
 !.pre-commit-config.yaml
 *.yml
 !mkdocs.yml
 
 # Ignore AiiDA specific files
-.aiida_run
+.aiida_run/
+
+# Ignore marimo specific files
+__marimo__/
 
 # Dedicated folder for personal projects
-**/scratch/
+scratch/
